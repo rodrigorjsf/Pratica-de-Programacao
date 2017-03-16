@@ -8,10 +8,10 @@ typedef struct data {
 
 int bissexto (int ano){
 	int anoAux1, anoAux2;
-	anoAux1 = ano/4;
-	anoAux2 = ano/400;
+	anoAux1 = ano%4;
+	anoAux2 = ano%400;
 	if (anoAux1 == 0){
-		anoAux1 = ano/100;
+		anoAux1 = ano%100;
 		if (anoAux1 == 0)
 			return 0;
 		else
@@ -21,7 +21,7 @@ int bissexto (int ano){
 		return 1;
 	return 0;
 }
-int validaData(Data dt1, Data dt2){
+int validaData(Data dt2){
 	int auxDia1, ano;
 	int QuantDias1[12] = { 31,28,31,30,31,30,31,31,30,31,30,31};
 	ano = bissexto(dt2.ano);
@@ -45,81 +45,173 @@ int validaData(Data dt1, Data dt2){
 		if (dt2.dia < 1 || dt2.dia > auxDia1)
 			return 0;
 	}
+        printf ("Data valida \n");
 	return 1;
 }
 
 double difData(Data dt1, Data dt2) {
-	int contAno = 0, contMes = 0, cont, auxDia1, ano, i;
+	int contAno = 0, contMes = 0, cont, ano, i;
+        int diasNoAnoAtual = 0, mesAux, anoAux, diaAux;
 	int QuantDias[12] = { 31,28,31,30,31,30,31,31,30,31,30,31};
-	int mesBissexto = 29;
+	int mesBissexto = 29; 
 	if (dt2.ano < dt1.ano)
 	{
-		ano = bissexto(dt2.ano);
-		for (i = dt2.mes-1; i < 12;dt2.mes++)
-		{
-			if (ano == 1)
-			{
-				if (i == 1)
-					contMes = contMes + mesBissexto;
-				else
-					contMes = contMes + QuantDias[i];
-			}
-			else
-				contMes = contMes + QuantDias[i];
-		}
-		dt2.ano += 1;
-		for (i = dt2.ano; i < dt1.ano; dt2.ano++)
-		{
-			ano = bissexto(dt2.ano);
-			if (ano == 1)
-				contAno += 366;
-			else
-				contAno += 365;
-		}
-		if (QuantDias[dt2.mes-1] == dt2.dia)
-			cont = (contAno+contMes) - QuantDias[dt2.mes-1];
-		else
-			cont = (contAno+contMes) - dt2.dia;
-		return cont;
+            diaAux = dt2.dia;
+            mesAux = dt2.mes;
+            anoAux = dt2.ano;            
+            ano = bissexto(anoAux);
+            for (i = mesAux-1; i < 12;i++)
+            {
+                if (ano == 1)
+                {
+                    if (i == 1)
+                        contMes = contMes + mesBissexto;
+                    else
+                        contMes = contMes + QuantDias[i];
+                }
+                else
+                    contMes = contMes + QuantDias[i];
+            }
+            anoAux += 1;
+            ano = bissexto(anoAux);
+            for (i = anoAux; i < dt1.ano; i++)
+            {
+                
+                if (ano == 1)
+                    contAno += 366;
+                else
+                    contAno += 365;
+            }
+            ano = bissexto(dt1.ano);
+            for (i = 0; i < dt1.mes-1; i++)
+            {
+                if (ano == 1)
+                {
+                    if (i == 1)
+                        diasNoAnoAtual = diasNoAnoAtual + mesBissexto;                   
+                    else
+                        diasNoAnoAtual = diasNoAnoAtual + QuantDias[i];            
+                }
+                else
+                    diasNoAnoAtual = diasNoAnoAtual + QuantDias[i];
+            }          
+            if (QuantDias[mesAux-1] == dt2.dia)
+                cont = (diasNoAnoAtual+contAno+contMes+dt1.dia) - QuantDias[mesAux-1];
+            else
+                cont = (diasNoAnoAtual+contAno+contMes+dt1.dia) - diaAux;
 	}
-	else
+	else if (dt2.ano > dt1.ano)
 	{
-		ano = bissexto(dt1.ano);
-		for (i = dt1.mes-1; i < 12;dt1.mes++)
-		{
-			if (ano == 1)
-			{
-				if (i == 1)
-					contMes = contMes + mesBissexto;
-				else
-					contMes = contMes + QuantDias[i];
-			}
-			else
-				contMes = contMes + QuantDias[i];
-		}
-		dt1.ano += 1;
-		for (i = dt1.ano; i < dt2.ano; dt1.ano++)
-		{
-			ano = bissexto(dt1.ano);
-			if (ano == 1)
-				contAno += 366;
-			else
-				contAno += 365;
-		}
-		if (QuantDias[dt1.mes-1] == dt1.dia)
-			cont = (contAno+contMes) - QuantDias[dt1.mes-1];
-		else
-			cont = (contAno+contMes) - dt1.dia;
-		return cont;
+            diaAux = dt1.dia;
+            mesAux = dt1.mes;
+            anoAux = dt1.ano; 
+            ano = bissexto(anoAux);
+            for (i = mesAux-1; i < 12;i++)
+            {
+                if (ano == 1)
+                {
+                    if (i == 1)
+                        contMes = contMes + mesBissexto;
+                    else
+                        contMes = contMes + QuantDias[i];
+                }
+                else
+                    contMes = contMes + QuantDias[i];
+            }
+            anoAux += 1;
+            for (i = anoAux; i < dt2.ano; i++)
+            {
+                ano = bissexto(anoAux);
+                if (ano == 1)
+                    contAno += 366;
+                else
+                    contAno += 365;
+            }
+            ano = bissexto(dt2.ano);
+            for (i = 0; i < dt2.mes-1; i++)
+            {
+                if (ano == 1)
+                {
+                    if (i == 1)
+                        diasNoAnoAtual = diasNoAnoAtual + mesBissexto;                   
+                    else
+                        diasNoAnoAtual = diasNoAnoAtual + QuantDias[i];            
+                }
+                else
+                    diasNoAnoAtual = diasNoAnoAtual + QuantDias[i];
+            }          
+            if (QuantDias[mesAux-1] == dt1.dia)                
+                cont = (diasNoAnoAtual+contAno+contMes+dt2.dia) - QuantDias[mesAux-1];
+            else
+                cont = (diasNoAnoAtual+contAno+contMes+dt2.dia) - diaAux;  
 	}
-
+        else
+        { 
+            
+            if (dt1.mes < dt2.mes)
+            {    
+                diaAux = dt1.dia;
+                mesAux = dt1.mes;
+                anoAux = dt1.ano;
+                ano = bissexto(anoAux);               
+                for (i = mesAux-1; i < dt2.mes-1;i++)
+                {
+                    if (ano == 1)
+                    {
+                        if (i == 1)
+                            contMes = contMes + mesBissexto;
+                        else
+                            contMes = contMes + QuantDias[i];
+                    }
+                    else
+                        contMes = contMes + QuantDias[i];
+                }
+                if (QuantDias[mesAux-1] == dt1.dia)                
+                    cont = (contMes+dt2.dia) - QuantDias[mesAux-1];
+                else
+                    cont = (contMes+dt2.dia) - diaAux;  
+            }
+            else if (dt1.mes > dt2.mes)
+            {
+                diaAux = dt2.dia;
+                mesAux = dt2.mes;
+                anoAux = dt2.ano;
+                ano = bissexto(anoAux);               
+                for (i = mesAux-1; i < dt1.mes-1;i++)
+                {
+                    if (ano == 1)
+                    {
+                        if (i == 1)
+                            contMes = contMes + mesBissexto;
+                        else
+                            contMes = contMes + QuantDias[i];
+                    }
+                    else
+                        contMes = contMes + QuantDias[i];
+                }
+                if (QuantDias[mesAux-1] == dt2.dia)                
+                    cont = (contMes+dt1.dia) - QuantDias[mesAux-1];
+                else
+                    cont = (contMes+dt1.dia) - diaAux;  
+            }  
+            else
+            {
+                if (dt1.dia < dt2.dia)
+                    cont = dt2.dia - dt1.dia;
+                else if (dt1.dia > dt2.dia)
+                    cont = dt1.dia - dt2.dia;
+                else
+                    cont = 0;
+            }
+        }
+        return cont;
 }
 
 int main () {
 	time_t tp;
 	struct tm *local;
 	Data dt1, dt2;
-	int validar,dias;
+	int validar, dias;
 	tp = time (NULL);
 	local = localtime (&tp);
 	printf (asctime (local));
@@ -127,7 +219,6 @@ int main () {
 	dt1.mes = local->tm_mon + 1;
 	dt1.ano = local->tm_year + 1900;
 	printf ("Data: %d / %d / %d \n", dt1.dia, dt1.mes, dt1.ano);
-	system ("pause");
 	do{
 	printf ("Digite uma data \n");
 	printf ("Dia: \n");
@@ -136,12 +227,13 @@ int main () {
 	scanf ("%d", &dt2.mes);
 	printf ("Ano: \n");
 	scanf ("%d", &dt2.ano);
-	validar = validaData(dt1, dt2);
+	validar = validaData(dt2);
 	if (validar == 0)
 		printf ("Data invalida \n");
 	}while (validar != 1);
 	dias = difData (dt1, dt2);
 	printf ("A diferenca em dias entre as datas eh: %d \n", dias);
+        system ("pause");
 	return 0;
 }
 
