@@ -48,13 +48,10 @@ int validaData(Data dt1, Data dt2){
 	return 1;
 }
 
-int difDias(Data dt1, Data dt2) {
+double difData(Data dt1, Data dt2) {
 	int contAno = 0, contMes = 0, cont, auxDia1, ano, i;
 	int QuantDias[12] = { 31,28,31,30,31,30,31,31,30,31,30,31};
 	int mesBissexto = 29;
-	ano = bissexto(dt2.ano);
-	contDia = QuantDias[dt2.mes-1]-dt2.dia;
-
 	if (dt2.ano < dt1.ano)
 	{
 		ano = bissexto(dt2.ano);
@@ -118,51 +115,6 @@ int difDias(Data dt1, Data dt2) {
 
 }
 
-
-/*int validaData(Data dt1, Data dt2){
-	int mesPar, auxDia1, auxDia2, ano;
-	int QuantDias1[12] = { 31,28,31,30,31,30,31,31,30,31,30,31};
-	mesPar = dt2.mes%2;
-	ano = bissexto(dt2.ano);
-	if (dt2.ano < 0)
-		return 0;
-	if (dt2.mes < 1 || dt2.mes > 12)
-		return 0;
-	if (dt2.dia < 1)
-		return 0;
-	if (dt2.mes < 8){
-		if (mesPar == 0){
-			if (dt2.mes == 2){
-				if (ano == 1)
-					auxDia1 = 29;
-				else
-					auxDia1 = QuantDias1[dt2.mes-1];
-				if (dt2.dia < 1 || dt2.dia > auxDia1)
-					return 0;
-			}
-			else
-			{
-				auxDia1 = QuantDias1[dt2.mes-1];
-				if (dt2.dia < 1 || dt2.dia > auxDia1)
-					return 0;
-			}
-		}
-		else
-		{
-			auxDia1 = QuantDias1[dt2.mes-1];
-			if (dt2.dia < 1 || dt2.dia > auxDia1)
-				return 0;
-		}
-	}
-	else
-	{
-		auxDia1 = QuantDias1[dt2.mes-1];
-		if (dt2.dia < 1 || dt2.dia > auxDia1)
-			return 0;
-	}
-	return 1;
-}*/
-
 int main () {
 	time_t tp;
 	struct tm *local;
@@ -192,3 +144,4 @@ int main () {
 	printf ("A diferenca em dias entre as datas eh: %d \n", dias);
 	return 0;
 }
+
