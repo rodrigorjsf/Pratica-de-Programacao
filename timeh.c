@@ -49,7 +49,7 @@ int validaData(Data dt1, Data dt2){
 }
 
 int difDias(Data dt1, Data dt2) {
-	int contAno = 0, contMes = 0, contDia = 0, cont, auxDia1, ano, i;
+	int contAno = 0, contMes = 0, cont, auxDia1, ano, i;
 	int QuantDias[12] = { 31,28,31,30,31,30,31,31,30,31,30,31};
 	int mesBissexto = 29;
 	ano = bissexto(dt2.ano);
