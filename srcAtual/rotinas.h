@@ -15,7 +15,7 @@ typedef struct TLinha {
 	Caractere * primeiro;
 }Linha;
 
-void InserirCaractere(char letra, Caractere ** atual, Linha ** linhaAtual);
+void InserirCaractere(char letra, Caractere ** atual, Linha ** linhaAtual, int * insert);
 void InserirNovaLinha(Linha ** Texto, Linha ** linhaAtual, Caractere ** atual, int * posColuna);
 void ConcatenarBackspace(Linha **linhaAtual, Caractere **caractereAtual, int *LinhaAtual, int *ColunaAtual);
 void DeletarLinhaBackspace(Linha ** linhaAtual, Caractere ** caracterAtual, int * LinhaAtual, int * ColunaAtual);

@@ -16,6 +16,7 @@
 #define ENTER 9
 #define ESC 10
 #define CLOSE 11
+#define INSERT 12
 
 typedef struct TKeyboard {
 	char chave;

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
+#include <string.h>
 #include <conio.h>
 #include "editor.h"
 #define FALSE 0
@@ -13,6 +14,7 @@ int main(int argc, char *argv[ ]){
 	system ("cls");
 	int LinhaAtualCont = 0;
 	int ColunaAtualCont = 0;
+	int insert = 1;
 	char c; Linha * Texto = (Linha *)malloc(sizeof(Linha));
 	Caractere * caractereAtual;
 	Linha * linhaAtual;
@@ -55,7 +57,8 @@ int main(int argc, char *argv[ ]){
 		printf(".");
 		printf("\nArquivo Aberto com Sucesso!");
 		c = fgetc(arquivo);
-		while (!feof(arquivo)) {
+		while (!feof(arquivo))
+		{
 			MoverCursor(ColunaAtualCont, LinhaAtualCont);
 			if (c != '\n')
 			{
@@ -69,30 +72,32 @@ int main(int argc, char *argv[ ]){
 				if (CountCaracteresLine((linhaAtual)) < 79 && linhaAtual->primeiro != NULL)
 					keyboard.comando = ENTER;
 			}
-			OperarTeclaTeclado(keyboard, &LinhaAtualCont, &ColunaAtualCont, &Texto, &caractereAtual, &linhaAtual, &arquivo, fileDir);
+			OperarTeclaTeclado(keyboard, &LinhaAtualCont, &ColunaAtualCont, &Texto, &caractereAtual, &linhaAtual, &arquivo, fileDir, &insert);
 			c = fgetc(arquivo);
 		}
 	}
 
 	while (1)
 	{
-		ImprimirTexto(Texto, caractereAtual, linhaAtual, fileDir);
+		ImprimirTexto(Texto, caractereAtual, linhaAtual, fileDir, insert);
 		MoverCursor(ColunaAtualCont, LinhaAtualCont);
 		keyboard = GetUserInput();
-		OperarTeclaTeclado(keyboard, &LinhaAtualCont, &ColunaAtualCont, &Texto, &caractereAtual, &linhaAtual, &arquivo, fileDir);
+		OperarTeclaTeclado(keyboard, &LinhaAtualCont, &ColunaAtualCont, &Texto, &caractereAtual, &linhaAtual, &arquivo, fileDir, &insert);
 	}
 }
 
-void MoverCursor(int x, int y) {
+void MoverCursor(int x, int y)
+{
 	COORD coord;
-	coord.X = x + 6;
-	coord.Y = y + 1;
+	coord.X = x;
+	coord.Y = y + 2;
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (!SetConsoleCursorPosition(hConsole, coord))
 		printf("Erro ao mover o cursor!");
 }
 
-void OperarTeclaTeclado(Keyboard keyboard, int * LinhaAtual, int * ColunaAtual, Linha ** Texto, Caractere ** caractereAtual, Linha ** linhaAtual, FILE ** arq, char fileDir[]) {
+void OperarTeclaTeclado(Keyboard keyboard, int * LinhaAtual, int * ColunaAtual, Linha ** Texto, Caractere ** caractereAtual, Linha ** linhaAtual, FILE ** arq, char fileDir[], int * insert)
+{
 
 	if (keyboard.comando == UP_ARROW)
 		EventoUpArrow(LinhaAtual, ColunaAtual, caractereAtual, linhaAtual);
@@ -106,6 +111,8 @@ void OperarTeclaTeclado(Keyboard keyboard, int * LinhaAtual, int * ColunaAtual, 
 		EventoDelete(LinhaAtual, ColunaAtual, caractereAtual, linhaAtual);
 	else if (keyboard.comando == BACKSPACE)
 		EventoBackspace(LinhaAtual, ColunaAtual, caractereAtual, linhaAtual);
+	else if (keyboard.comando == INSERT)
+			EventoInsert(insert);
 	else if (keyboard.comando == ENTER)
 		EventoEnter(LinhaAtual, ColunaAtual, caractereAtual, Texto, linhaAtual);
 	else if (keyboard.comando == SAVE_FILE)
@@ -115,10 +122,11 @@ void OperarTeclaTeclado(Keyboard keyboard, int * LinhaAtual, int * ColunaAtual, 
 	else if (keyboard.comando == CLOSE)
 		EventCloseEditor(arq, fileDir, Texto, linhaAtual, caractereAtual, ColunaAtual, LinhaAtual);
 	else if (keyboard.chave != 0)
-		EventoCharacter(keyboard.chave, LinhaAtual, ColunaAtual, *Texto, caractereAtual, linhaAtual);
+		EventoCharacter(keyboard.chave, LinhaAtual, ColunaAtual, *Texto, caractereAtual, linhaAtual, insert);
 }
 
-void EventoLeftArrow(int * LinhaAtual, int * ColunaAtual, Caractere ** caracterAtual, Linha ** linhaAtual){
+void EventoLeftArrow(int * LinhaAtual, int * ColunaAtual, Caractere ** caracterAtual, Linha ** linhaAtual)
+{
 	int i = 0;
 	if ((*ColunaAtual) > 0)
 	{
@@ -143,7 +151,8 @@ void EventoLeftArrow(int * LinhaAtual, int * ColunaAtual, Caractere ** caracterA
 	}
 }
 
-void EventoRightArrow(int * LinhaAtual, int * ColunaAtual, Caractere ** caracterAtual, Linha ** linhaAtual) {
+void EventoRightArrow(int * LinhaAtual, int * ColunaAtual, Caractere ** caracterAtual, Linha ** linhaAtual)
+{
 	int qntCaracteres = CountCaracteresLine((*linhaAtual));
 	if ((*ColunaAtual) < qntCaracteres)
 	{
@@ -155,7 +164,8 @@ void EventoRightArrow(int * LinhaAtual, int * ColunaAtual, Caractere ** caracter
 	}
 	else
 	{
-		if ((*linhaAtual)->Proxima != NULL) {
+		if ((*linhaAtual)->Proxima != NULL)
+		{
 			(*LinhaAtual)++;
 			(*linhaAtual) = (*linhaAtual)->Proxima;
 			(*caracterAtual) = NULL;
@@ -165,11 +175,13 @@ void EventoRightArrow(int * LinhaAtual, int * ColunaAtual, Caractere ** caracter
 	}
 }
 
-void EventoUpArrow(int * LinhaAtual, int * ColunaAtual, Caractere ** caracterAtual, Linha ** linhaAtual) {
+void EventoUpArrow(int * LinhaAtual, int * ColunaAtual, Caractere ** caracterAtual, Linha ** linhaAtual)
+{
 	int countLinhaDestino, i = 0;
 	if ((*LinhaAtual) <= 0)
 		return;
-	else if ((*caracterAtual) == NULL) {
+	else if ((*caracterAtual) == NULL)
+	{
 		(*LinhaAtual)--;
 		(*linhaAtual) = (*linhaAtual)->Anterior;
 		(*caracterAtual) = NULL;
@@ -180,7 +192,8 @@ void EventoUpArrow(int * LinhaAtual, int * ColunaAtual, Caractere ** caracterAtu
 		(*LinhaAtual)--;
 		(*linhaAtual) = (*linhaAtual)->Anterior;
 		countLinhaDestino = CountCaracteresLine((*linhaAtual));
-		if ((*ColunaAtual) > countLinhaDestino) {
+		if ((*ColunaAtual) > countLinhaDestino)
+		{
 			for ((*caracterAtual) = (*linhaAtual)->primeiro; i < countLinhaDestino - 1; (*caracterAtual) = (*caracterAtual)->Proxima, i++);
 			(*ColunaAtual) = countLinhaDestino;
 		}
@@ -195,7 +208,8 @@ void EventoUpArrow(int * LinhaAtual, int * ColunaAtual, Caractere ** caracterAtu
 	}
 }
 
-void EventoDownArrow(int * LinhaAtual, int * ColunaAtual, Caractere ** caracterAtual, Linha ** linhaAtual) {
+void EventoDownArrow(int * LinhaAtual, int * ColunaAtual, Caractere ** caracterAtual, Linha ** linhaAtual)
+{
 	int countLinhaDestino, i = 0;
 	if ((*linhaAtual)->Proxima == NULL)
 		return;
@@ -204,7 +218,8 @@ void EventoDownArrow(int * LinhaAtual, int * ColunaAtual, Caractere ** caracterA
 		(*LinhaAtual)++;
 		countLinhaDestino = CountCaracteresLine((*linhaAtual)->Proxima);
 		(*linhaAtual) = (*linhaAtual)->Proxima;
-		if ((*ColunaAtual) > countLinhaDestino) {
+		if ((*ColunaAtual) > countLinhaDestino)
+		{
 			for ((*caracterAtual) = (*linhaAtual)->primeiro; i < countLinhaDestino - 1; (*caracterAtual) = (*caracterAtual)->Proxima, i++);
 
 			(*ColunaAtual) = countLinhaDestino;
@@ -222,41 +237,57 @@ void EventoDownArrow(int * LinhaAtual, int * ColunaAtual, Caractere ** caracterA
 	}
 }
 
-void EventoEnter(int * LinhaAtual, int * ColunaAtual, Caractere ** atual, Linha ** Texto, Linha ** linhaAtual) {
+void EventoEnter(int * LinhaAtual, int * ColunaAtual, Caractere ** atual, Linha ** Texto, Linha ** linhaAtual)
+{
 	InserirNovaLinha(Texto, linhaAtual, atual, ColunaAtual);
 	(*LinhaAtual)++;
 	(*ColunaAtual) = 0;
 }
 
-void EventoBackspace(int * LinhaAtualCount, int * ColunaAtualCount, Caractere ** caracterAtual, Linha ** linhaAtual) {
+void EventoBackspace(int * LinhaAtualCount, int * ColunaAtualCount, Caractere ** caracterAtual, Linha ** linhaAtual)
+{
 	if (DeletarCaractereAtual(linhaAtual, caracterAtual, LinhaAtualCount, ColunaAtualCount) == DELETE_SUCESS)
 		(*ColunaAtualCount)--;
 
 }
 
-void EventoDelete(int * LinhaAtual, int * ColunaAtual, Caractere ** caracterAtual, Linha ** linhaAtual) {
+void EventoDelete(int * LinhaAtual, int * ColunaAtual, Caractere ** caracterAtual, Linha ** linhaAtual)
+{
 	DeletarProximoCaractere(linhaAtual, caracterAtual, &(*caracterAtual)->Proxima);
 }
 
-void EventoCharacter(char letra, int * LinhaAtual, int * ColunaAtual, Linha * Texto, Caractere ** atual, Linha ** linhaAtual) {
-	InserirCaractere(letra, atual, linhaAtual);
+void EventoCharacter(char letra, int * LinhaAtual, int * ColunaAtual, Linha * Texto, Caractere ** atual, Linha ** linhaAtual, int * insert)
+{
+	InserirCaractere(letra, atual, linhaAtual, insert);
 	(*ColunaAtual)++;
 	QuebraLinhaAutomatica(&Texto, linhaAtual, atual, LinhaAtual, ColunaAtual, MAX_COLUNA);
 }
 
-void ImprimirTexto(Linha * Texto, Caractere * caractereAtual, Linha * linhaAtual, char fileDir[]) {
+void EventoInsert(int * insert)
+{
+	if (*insert == 1)
+		*insert = 0;
+	else
+		*insert = 1;
+}
+
+void ImprimirTexto(Linha * Texto, Caractere * caractereAtual, Linha * linhaAtual, char fileDir[], int insert) {
 	int qtdLinha = 0;
+	char op[4];
 	Linha * lAux = Texto;
 	Caractere * cAux = NULL;
 	system("cls");
-
-	printf("\n");
+	if (insert == 1)
+		strcpy(op,"ON");
+	else
+		strcpy(op,"OFF");
+	printf("INSERT: %s \n\n", op);
 
 	while (lAux != NULL)
 	{
 		qtdLinha++;
 		cAux = lAux->primeiro;
-		printf("%4i. ", qtdLinha);
+
 
 		while (cAux != NULL)
 		{

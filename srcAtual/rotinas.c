@@ -2,43 +2,81 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#define MAX_COLUNA 79
 
-void InserirCaractere(char letra, Caractere ** atual, Linha ** linhaAtual) {
+void InserirCaractere(char letra, Caractere ** atual, Linha ** linhaAtual, int * insert) {
 	Caractere * novo = (Caractere *)malloc(sizeof(Caractere));
+	int OP = *insert;
 	novo->Letra = letra;
 	novo->Proxima = NULL;
 	novo->Anterior = NULL;
-
-	if ((*atual) == NULL)
+	if(OP == 1)
 	{
-		*atual = novo;
-		if ((*linhaAtual)->primeiro == NULL)
-			(*linhaAtual)->primeiro = (*atual);
+		if ((*atual) == NULL)
+		{
+			*atual = novo;
+			if ((*linhaAtual)->primeiro == NULL)
+				(*linhaAtual)->primeiro = (*atual);
+			else
+			{
+				novo->Proxima = (*linhaAtual)->primeiro;
+				(*linhaAtual)->primeiro->Anterior = novo;
+				(*linhaAtual)->primeiro = novo;
+			}
+		}
 		else
 		{
-			novo->Proxima = (*linhaAtual)->primeiro;
-			(*linhaAtual)->primeiro->Anterior = novo;
-			(*linhaAtual)->primeiro = novo;
+			if ((*atual)->Proxima == NULL) {
+				(*atual)->Proxima = novo;
+				novo->Anterior = (*atual);
+				(*atual) = novo;
+			}
+			else
+			{
+				novo->Anterior = (*atual);
+				novo->Proxima = (*atual)->Proxima;
+				(*atual)->Proxima->Anterior = novo;
+				(*atual)->Proxima = novo;
+				(*atual) = novo;
+			}
 		}
 	}
 	else
 	{
-		if ((*atual)->Proxima == NULL) {
-			(*atual)->Proxima = novo;
-			novo->Anterior = (*atual);
-			(*atual) = novo;
+		if ((*atual) == NULL)
+		{
+			*atual = novo;
+			if ((*linhaAtual)->primeiro == NULL)
+				(*linhaAtual)->primeiro = (*atual);
+			else
+			{
+				(*linhaAtual)->primeiro->Letra = letra;
+				(*atual) = (*linhaAtual)->primeiro;
+			}
 		}
 		else
 		{
-			novo->Anterior = (*atual);
-			novo->Proxima = (*atual)->Proxima;
+			if ((*atual)->Proxima == NULL) {
+				(*atual)->Proxima = novo;
+				novo->Anterior = (*atual);
+				(*atual) = novo;
+			}
+			else
+			{
+				(*atual)->Proxima->Letra = letra;
+				(*atual) = (*atual)->Proxima;
+			}
+				/*novo->Anterior = (*atual);
+				novo->Proxima = (*atual)->Proxima;
+				(*atual)->Proxima->Anterior = novo;
+				(*atual)->Proxima = novo;
+				(*atual) = novo;*/
 
-			(*atual)->Proxima->Anterior = novo;
-			(*atual)->Proxima = novo;
-			(*atual) = novo;
-		}
 	}
 }
+}
+
+
 
 void InserirNovaLinha(Linha ** Texto, Linha ** linhaAtual, Caractere ** atual, int * posColuna) {
 	Linha * novaLinha = (Linha *)malloc(sizeof(Linha));
@@ -125,41 +163,67 @@ int DeletarCaractereAtual(Linha **linhaAtual, Caractere **caracterAtual, int * L
 }
 
 void ConcatenarBackspace(Linha ** linhaAtual, Caractere ** caractereAtual, int * LinhaAtual, int * ColunaAtual) {
-	int count, i = 0;
+	int count, countAux, i = 0;
 	Caractere * ToDelete;
-	Linha * lAux = (*linhaAtual)->Anterior;
-	if (lAux == NULL)
+	Caractere * aux1;
+	Caractere * QuebraLinha = (Caractere *)malloc(sizeof(Caractere));
+	Linha * lAux1 = (*linhaAtual)->Anterior;
+	QuebraLinha->Letra = '\n';
+	QuebraLinha->Anterior = NULL;
+	QuebraLinha->Proxima = NULL;
+
+	if (lAux1 == NULL)
 		return;
 
-	count = CountCaracteresLine(lAux);
-
-	for (ToDelete = lAux->primeiro; i < (count - 1); i++)
+	count = CountCaracteresLine(lAux1);
+	for (ToDelete = lAux1->primeiro; i < (count - 1); i++)
 		ToDelete = ToDelete->Proxima;
 	(*caractereAtual) = ToDelete;
 
-	if (CountCaracteresLine((*linhaAtual)) == 0) {
-		DeletarLinhaBackspace(linhaAtual, caractereAtual, LinhaAtual, ColunaAtual);
-		return;
-	}
+	/*if (CountCaracteresLine(lAux1) == 0) {
+			DeletarLinhaBackspace(&lAux1, caractereAtual, LinhaAtual, ColunaAtual);
+			(*LinhaAtual)--;
+			(*ColunaAtual) = count;
+			return;
+	}*/
 
 	free(ToDelete->Proxima);
 	ToDelete->Proxima = (*linhaAtual)->primeiro;
 
 	if ((*linhaAtual)->primeiro != NULL)
 		(*linhaAtual)->primeiro->Anterior = ToDelete;
+	i = 0;
+	countAux = CountCaracteresLine(lAux1);
+	if(countAux > MAX_COLUNA){
+	for (aux1 = lAux1->primeiro; i < MAX_COLUNA; i++)
+		aux1 = aux1->Proxima;
+	}
+	(*linhaAtual)->primeiro = aux1->Proxima;
+	(*linhaAtual)->primeiro->Anterior = NULL;
+	aux1->Proxima = QuebraLinha;
 
-	lAux->Proxima = (*linhaAtual)->Proxima;
+	for (aux1 = lAux1->primeiro; i < MAX_COLUNA; i++){
+		if (aux1 == (*caractereAtual)){
+			countAux = i;
+			break;
+		}
+		aux1 = aux1->Proxima;
+	}
 
+	//lAux->Proxima = (*linhaAtual)->Proxima;
+	if (CountCaracteresLine((*linhaAtual)) == 0) {
+		DeletarLinhaBackspace(linhaAtual, caractereAtual, LinhaAtual, ColunaAtual);
+		return;
+	}
 	(*LinhaAtual)--;
 	(*ColunaAtual) = count;
-
-	free((*linhaAtual));
-	(*linhaAtual) = lAux;
+	(*linhaAtual) = lAux1;
 }
 
 void DeletarLinhaBackspace(Linha ** linhaAtual, Caractere ** caracterAtual, int * LinhaAtual, int * ColunaAtual) {
 	Linha * toDelete = (*linhaAtual);
-	Caractere * cToDelete;
+	Linha * lAux1 = (*linhaAtual)->Anterior;
+	Caractere * cToDelete, * aux1;
 	int count, i = 0;
 
 	if ((*linhaAtual)->primeiro != NULL)
@@ -191,11 +255,17 @@ void DeletarLinhaBackspace(Linha ** linhaAtual, Caractere ** caracterAtual, int 
 			cToDelete->Proxima = NULL;
 		}
 	}
-
+	for (aux1 = lAux1->primeiro; i < MAX_COLUNA; i++){
+		if (aux1 == (*caracterAtual)){
+			count = i+1;
+			break;
+		}
+		aux1 = aux1->Proxima;
+	}
 	free(toDelete);
 
 	(*LinhaAtual)--;
-	(*ColunaAtual) = CountCaracteresLine((*linhaAtual));
+	(*ColunaAtual) = count;
 }
 
 int DeletarProximoCaractere(Linha ** linhaAtual, Caractere ** caracterAtual, Caractere ** prox) {

@@ -31,6 +31,9 @@ Keyboard GetUserInput() {
 		case 77:
 			c.comando = RIGHT_ARROW;
 			break;
+		case 82:
+			c.comando = INSERT;
+			break;
 		case 83:
 			c.comando = DEL;
 			break;
