@@ -7,7 +7,7 @@
 #define FALSE 0
 #define TRUE 1
 #define WHITE 15
-#define MAX_COLUNA 79
+#define MAX_COLUNA 69
 #define _CRT_SECURE_NO_WARNINGS
 
 int main(int argc, char *argv[ ]){
@@ -69,7 +69,7 @@ int main(int argc, char *argv[ ]){
 			{
 				keyboard.chave = 0;
 				keyboard.comando = 0;
-				if (CountCaracteresLine((linhaAtual)) < 79 && linhaAtual->primeiro != NULL)
+				if (CountCaracteresLine((linhaAtual)) < 69 && linhaAtual->primeiro != NULL)
 					keyboard.comando = ENTER;
 			}
 			OperarTeclaTeclado(keyboard, &LinhaAtualCont, &ColunaAtualCont, &Texto, &caractereAtual, &linhaAtual, &arquivo, fileDir, &insert);

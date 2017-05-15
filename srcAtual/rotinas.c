@@ -1,8 +1,7 @@
 #include "rotinas.h"
-
 #include <stdio.h>
 #include <stdlib.h>
-#define MAX_COLUNA 79
+#define MAX_COLUNA 69
 
 void InserirCaractere(char letra, Caractere ** atual, Linha ** linhaAtual, int * insert) {
 	Caractere * novo = (Caractere *)malloc(sizeof(Caractere));
@@ -66,12 +65,6 @@ void InserirCaractere(char letra, Caractere ** atual, Linha ** linhaAtual, int *
 				(*atual)->Proxima->Letra = letra;
 				(*atual) = (*atual)->Proxima;
 			}
-				/*novo->Anterior = (*atual);
-				novo->Proxima = (*atual)->Proxima;
-				(*atual)->Proxima->Anterior = novo;
-				(*atual)->Proxima = novo;
-				(*atual) = novo;*/
-
 	}
 }
 }
@@ -81,6 +74,9 @@ void InserirCaractere(char letra, Caractere ** atual, Linha ** linhaAtual, int *
 void InserirNovaLinha(Linha ** Texto, Linha ** linhaAtual, Caractere ** atual, int * posColuna) {
 	Linha * novaLinha = (Linha *)malloc(sizeof(Linha));
 	Caractere * QuebraLinha = (Caractere *)malloc(sizeof(Caractere));
+	Caractere * QuebraLinhaAux = (Caractere *)malloc(sizeof(Caractere));
+	Caractere * aux;
+	int count, i = 0;
 
 	novaLinha->primeiro = NULL;
 	novaLinha->Anterior = NULL;
@@ -89,6 +85,10 @@ void InserirNovaLinha(Linha ** Texto, Linha ** linhaAtual, Caractere ** atual, i
 	QuebraLinha->Letra = '\n';
 	QuebraLinha->Anterior = NULL;
 	QuebraLinha->Proxima = NULL;
+
+	QuebraLinhaAux->Letra = '\n';
+	QuebraLinhaAux->Anterior = NULL;
+	QuebraLinhaAux->Proxima = NULL;
 
 	if ((*atual) == NULL)
 	{
@@ -118,7 +118,17 @@ void InserirNovaLinha(Linha ** Texto, Linha ** linhaAtual, Caractere ** atual, i
 		novaLinha->Proxima = (*linhaAtual)->Proxima;
 
 		if ((*linhaAtual)->Proxima != NULL)
+            {
 			(*linhaAtual)->Proxima->Anterior = novaLinha;
+			count = CountCaracteresLine(novaLinha);
+			for (aux = novaLinha->primeiro; i < (count - 1); i++){
+                        aux = aux->Proxima;
+			}
+			aux->Proxima = QuebraLinhaAux;
+            QuebraLinhaAux->Anterior = aux;
+            }
+
+
 
 		(*linhaAtual)->Proxima = novaLinha;
 		(*atual) = NULL;
@@ -180,6 +190,10 @@ void ConcatenarBackspace(Linha ** linhaAtual, Caractere ** caractereAtual, int *
 		ToDelete = ToDelete->Proxima;
 	(*caractereAtual) = ToDelete;
 
+	if (CountCaracteresLine((*linhaAtual)) == 0) {
+		DeletarLinhaBackspace(linhaAtual, caractereAtual, LinhaAtual, ColunaAtual);
+		return;
+	}
 	/*if (CountCaracteresLine(lAux1) == 0) {
 			DeletarLinhaBackspace(&lAux1, caractereAtual, LinhaAtual, ColunaAtual);
 			(*LinhaAtual)--;
@@ -201,6 +215,7 @@ void ConcatenarBackspace(Linha ** linhaAtual, Caractere ** caractereAtual, int *
 	(*linhaAtual)->primeiro = aux1->Proxima;
 	(*linhaAtual)->primeiro->Anterior = NULL;
 	aux1->Proxima = QuebraLinha;
+	QuebraLinha->Anterior = aux1;
 
 	for (aux1 = lAux1->primeiro; i < MAX_COLUNA; i++){
 		if (aux1 == (*caractereAtual)){
