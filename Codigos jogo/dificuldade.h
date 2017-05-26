@@ -14,6 +14,7 @@
 typedef struct tile{
 	BITMAP* img;
 	int num;
+	struct tile * prox;
 }Tile;
 
 void fecha_dificuldade();
@@ -22,5 +23,7 @@ void dificuldade_facil(int op);
 void dificuldade_medio(int op);
 void dificuldade_dificil(int op);
 int validar_vetor(int checar[], int aux);
+Tile* create_Tile(BITMAP* image, int count, Tile * tile, int x, int y);
+void destroy_Tile(Tile* t);
 
 #endif /* DIFICULDADE_H_ */

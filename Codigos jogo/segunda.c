@@ -60,6 +60,7 @@ int segunda_tela(){
 		{
 			draw_sprite(bufferAux, mickey, 110, 250);
 			if(mouse_b == 1){
+				mouse_b = 0;
 				textout_ex(bufferAux, font, "TESTE", 100, 100, makecol(0, 0, 255), -1);
 				op = 0;
 				if(tela_dificuldade(op) == 1)
@@ -71,6 +72,7 @@ int segunda_tela(){
 		{
 			draw_sprite(bufferAux, donald, 510, 250);
 			if(mouse_b == 1){
+				mouse_b = 0;
 				textout_ex(bufferAux, font, "TESTE", 100, 100, makecol(0, 0, 255), -1);
 				op = 1;
 				if(tela_dificuldade(op) == 1)

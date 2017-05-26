@@ -72,6 +72,7 @@ int main()
 	   if (mouse_x > 200 && mouse_x < 350 && mouse_y > 300 && mouse_y < 355)
 	   {
 		   if(mouse_b == 1){
+			   mouse_b = 0;
 			   if(segunda_tela() == 1)
 				   sair_programa = TRUE;
 			   else
@@ -82,6 +83,7 @@ int main()
 	   if (mouse_x > 450 && mouse_x < 600 && mouse_y > 300 && mouse_y < 355)
 	   {
 		   if(mouse_b == 1)
+			   mouse_b = 0;
 		   {
 			   textout_ex(buffer, font, "TESTE", 100, 100, makecol(0, 0, 255), -1);
 			   sair_programa = TRUE;
