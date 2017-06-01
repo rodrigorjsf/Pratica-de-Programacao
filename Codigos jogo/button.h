@@ -19,7 +19,6 @@ typedef struct button
 
 Button* create_button(BITMAP* image, BITMAP* h_image, SAMPLE* h_effect, int x, int y);
 void button_input(Button* b);
-//void button_update(Button* b);
 void button_draw(Button* b, BITMAP* buffer);
 void destroy_button(Button* b);
 

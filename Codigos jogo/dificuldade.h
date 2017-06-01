@@ -11,19 +11,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct tile{
-	BITMAP* img;
-	int num;
-	struct tile * prox;
-}Tile;
 
-void fecha_dificuldade();
+FILE * criarArquivo();
+void menu_vitoria(int movimentos);
 int tela_dificuldade(int op);
-void dificuldade_facil(int op);
-void dificuldade_medio(int op);
-void dificuldade_dificil(int op);
 int validar_vetor(int checar[], int aux);
-Tile* create_Tile(BITMAP* image, int count, Tile * tile, int x, int y);
-void destroy_Tile(Tile* t);
+int valida_tabuleiro(int tabuleiro[3][3], int TabCerto[3][3]);
 
 #endif /* DIFICULDADE_H_ */
